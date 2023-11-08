@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.tooling.preview.Preview
 import com.topic2.android.notes.domain.model.NoteModel
@@ -82,6 +83,19 @@ fun NotesScreen(viewModel: MainViewModel) {
                     coroutineScope.launch {
                         scaffoldState.drawerState.close()
                     }
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.onCreateNewNoteClick() },
+                contentColor = MaterialTheme.colors.background,
+                content = {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add Note Button"
+                    )
                 }
             )
         },

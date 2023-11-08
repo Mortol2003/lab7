@@ -18,6 +18,12 @@ import androidx.compose.ui.unit.sp
 import com.topic2.android.notes.domain.model.ColorModel
 import com.topic2.android.notes.util.components.NoteColor
 import com.topic2.android.notes.util.fromHex
+import com.topic2.android.notes.viewmodel.MainViewModel
+
+@Composable
+fun SaveNoteScreen(viewModel: MainViewModel){
+
+}
 
 @Composable
 fun ColorItem(
