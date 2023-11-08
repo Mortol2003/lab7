@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="header">Заголовок</string>
+    <string name="content">Содержимое</string>
+    <string name="notes">Заметки</string>
+    <string name="on_dark_theme">Включить тёмную тему</string>
+    <string name="basket">Корзина</string>
+</resources>
