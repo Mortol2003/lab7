@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,22 +33,91 @@ import com.topic2.android.notes.domain.model.NEW_NOTE_ID
 import com.topic2.android.notes.domain.model.NoteModel
 import com.topic2.android.notes.routing.NotesRouter
 import com.topic2.android.notes.routing.Screen
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SaveNoteScreen(viewModel: MainViewModel){
     val noteEntry: NoteModel by viewModel.noteEntry.observeAsState(NoteModel())
+    val colors: List<ColorModel> by viewModel.colors
+        .observeAsState(listOf())
 
+    val bottomDrawerState: BottomDrawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+
+    val moveNoteToTrashDialogShownState: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(false)
+    }
     Scaffold(topBar = {
         val isEditingMode: Boolean = noteEntry.id != NEW_NOTE_ID
         SaveNoteTopAppBar(
+            isEditingMode = isEditingMode,
+            onBackClick = {
             isEditingMode = isEditingMode, onBackClick = {
                 NotesRouter.navigateTo(Screen.Notes)
-            },
-            onSaveNoteClick = {}, onOpenColorPickerClick = {}, onDeleteNoteClick = {}
-        )
+            }
+                onSaveNoteClick = {
+                    viewModel.saveNote(noteEntry)
+                },
+                onOpenColorPickerClick = {
+                    coroutineScope.launch { bottomDrawerState.open() }
+                },
+                onDeleteNoteClick = {
+                    moveNoteToTrashDialogShownState.value = true
+                }
     },
-        content = {}
+            ontent = {
+                BottomDrawer(
+                    drawerState = bottomDrawerState,
+                    drawerContent = {
+                        ColorPicker(
+                            color = colors,
+                            onColorSelect = { color ->
+                                val newNoteEntry = noteEntry.copy(color = color)
+                                viewModel.onNoteEntryChange(newNoteEntry)
+                            }
+                        )
+                    },
+                    content = {
+                        SaveNoteContent(
+                            note = noteEntry,
+                            onNoteChange = { updateNoteEntry ->
+                                viewModel.onNoteEntryChange(updateNoteEntry)
+                            }
+                        )
+                    }
+                )
+                if (moveNoteToTrashDialogShownState.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            moveNoteToTrashDialogShownState.value = false
+                        },
+                        title = {
+                            Text("Move note to the trash?")
+                        },
+                        text = {
+                            Text(
+                                "Are you sure want to" +
+                                        "move this note to the trash?"
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.moveNoteToTrash(noteEntry)
+                            }) {
+                                Text("Confirm")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                moveNoteToTrashDialogShownState.value = false
+                            }) {
+                                Text("Dismiss")
+                            }
+                        }
+                    )
+                }
+            }
     )
 
 @Composable
