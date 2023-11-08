@@ -264,3 +264,33 @@ private fun NoteCheckOption(
 fun NoteCheckOptionPreview() {
     NoteCheckOption(false) {}
 }
+
+@Composable
+private fun ContentTextField(
+    modifier: Modifier = Modifier,
+    label: String,
+    text: String,
+    onTextChange: (String) -> Unit
+) {
+    TextField(
+        value = text,
+        onValueChange = onTextChange,
+        label = { Text(label)},
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = MaterialTheme.colors.surface
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ContentTextFieldPreview() {
+    ContentTextField(
+        label = "Title",
+        text = "",
+        onTextChange = {}
+    )
+}
